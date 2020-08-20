@@ -1,0 +1,12 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+h1 {
+    text-align: center;
+}
+
+p {
+    margin-left: 20%;
+    margin-right: 20%;
+}
