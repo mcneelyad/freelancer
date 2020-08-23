@@ -14,7 +14,18 @@
         <main>
             <div class="jumbotron">
                 <h2>Jobs</h2>
-                <p>A website for users to post ideas/concepts or jobs for freelance developers to complete and then the user will decide on the best version to buy. </p>        
+                <p>A website for users to post ideas/concepts or jobs for freelance developers to complete and then the user will decide on the best version to buy. </p>  
+
+                <a class="btn btn-primary" href="/jobs/new" role="button">Create a new concept/idea post</a>
+                <br><br><br>
+
+                <ul class="list-group">
+                    <% posts.forEach(function(post){ %>
+                        <li class="list-group-item">
+                            <a href="/jobs/<%= post._id %>"><%= post["title"] %></a>
+                        </li>
+                    <% }) %>
+                </ul>
             </div>
         </main>
 

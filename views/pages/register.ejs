@@ -1,0 +1,45 @@
+<!-- views/pages/jobs.ejs -->
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <%- include("../partials/head"); -%>
+    </head>
+    <body class="container">
+
+        <header>
+            <%- include("../partials/header"); -%>
+        </header>
+
+        <main>
+            <div class="jumbotron">
+                <h2>Register</h2>
+                <br><br>
+
+                <form>
+                    <div class="form-group">
+                        <label for="username">Username</label>
+                        <input type="text" name="username" placeholder="Enter your username ..." class="form-control">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="text" name="email" placeholder="Enter your email" class="form-control">
+                    </div>
+
+                    <div class="form-group>
+                        <label for="password">Password</label>
+                        <input type="password" name="password" placeholder="Password" class="form-control">
+                    </div>
+                    <br><br>
+                    <button type="submit" class="btn btn-success">Register</button>
+                </form>
+            </div>
+        </main>
+
+        <footer>
+            <%- include("../partials/footer"); -%>
+        </footer>
+
+    </body>
+</html>
