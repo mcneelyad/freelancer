@@ -11,13 +11,13 @@ app.set('view engine', 'ejs');
 // use res.render to load up an ejs view file
 
 // index page 
-router.get('/', function(req, res) {
+app.get('/', function(req, res) {
     res.render('pages/index');
 });
 
-// about page 
-router.get('/about', function(req, res) {
-    res.render('pages/about');
+// jobs page 
+app.get('/jobs', function(req, res) {
+    res.render('pages/jobs');
 });
 
 app.listen(5000);

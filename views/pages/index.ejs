@@ -12,20 +12,21 @@
     </header>
 
     <main>
-        <div class="jumbotron">
-            <h1>This is a heading</h1>
-            <p>This is a paragraph</p>        
 
+        <div class="row">
+            <div class="col-sm-8">    
+                <div class="jumbotron">
+                    <h2>Freelancer Website</h2>
+                    <p>A website for users to post ideas/concepts or jobs for freelance developers to complete and then the user will decide on the best version to buy. </p>        
+                </div>
+            </div>
 
-            <h2>Variable</h2>
-            <p><%- tagline %></p>
+            <div class="col-sm-4">        
+                <div class="well">
+                    <p>Sidebar!</p>
+                </div>
+            </div>
 
-            <h2>Loop</h2>
-            <ul>
-                <% drinks.forEach(function(drink) { %>
-                    <li><%= drink.name %> - <%= drink.drunkness %></li>
-                <% }); %>
-            </ul>
         </div>
     </main>
 
