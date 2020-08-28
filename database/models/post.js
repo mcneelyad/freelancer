@@ -2,7 +2,8 @@ const mongoose = require('mongoose');
  
 const PostSchema = new mongoose.Schema({
     title: String,
-    description: String
+    description: String,
+    posted_by: String
 });
  
 const Post = mongoose.model('Post', PostSchema);

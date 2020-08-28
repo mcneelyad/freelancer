@@ -3,11 +3,12 @@ const path = require('path')
 const mongoose = require('mongoose')
 const bodyParser = require('body-parser')
 
-//controllers
-const createUserController = require("./controllers/createUser");
-const storeUserController = require('./controllers/storeUser');
+const bcrypt = require('bcrypt')
+const session = require('express-session');
+const flash = require('connect-flash');
 
 const Post = require('./database/models/post');
+const User = require('./database/models/user')
 
 const app = express();
 
@@ -52,16 +53,69 @@ app.get('/jobs/:id', async (req, res) => {
 
 app.post('/jobs/save', (req, res) => {
     Post.create(req.body, (error, post) => {
-        console.log(req.body)
         res.redirect('/jobs')
     })
 });
 
 app.get('/auth/login', function(req, res) {
-    res.render('pages/login');
+    res.render('pages/login')
 });
 
-app.get("/auth/register", createUserController);
+app.get("/auth/register", function (req, res) {
+    res.render('pages/register')
+});
+
+app.post("/auth/register", function (req, res) {
+    const { username, email, password } = req.body;
+
+    let errors = [];
+
+    console.log('Name: ' + username+ ' , Email: ' + email+ ' , Password: ' + password);
+
+    if(!username || !email || !password) {
+        errors.push({msg : "Please fill in all required fields."})
+    }
+
+    if(password.length < 6 ) {
+        errors.push({msg : 'Password must be at least 6 characters long.'})
+    }
+    if(errors.length > 0 ) {
+        res.render('pages/register', {
+            errors : errors,
+            username : username,
+            email : email,
+            password : password
+        })
+    } else {
+        //if it passes validation
+        User.findOne({email : email}).exec((err,user) => {
+            if(user) {
+                errors.push({msg: 'Email is already registered'});
+                render(res,errors,username,email,password);
+            } else {
+                const newUser = new User({ 
+                    username : username, 
+                    email : email, 
+                    password : password
+                });
+                bcrypt.genSalt(10,(err,salt)=> 
+                bcrypt.hash(newUser.password,salt, (err,hash) => {
+                    if(err) throw err;
+                    
+                    //save pass to hash
+                    newUser.password = hash;
+                    
+                    //save user
+                    newUser.save().then((value) => {
+                        res.redirect('/auth/login');
+                    }).catch(value => console.log(value));
+                      
+                }));
+            };
+        }
+    )};
+});    
+    
 
 app.listen(5000);
 console.log('server started');
