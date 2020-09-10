@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 
 const bcrypt = require('bcrypt');
 const session = require('express-session');
+const connectMongo = require('connect-mongo');
 const flash = require('express-flash');
 const passport = require('passport');
 
@@ -20,10 +21,20 @@ app.set('view engine', 'ejs');
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }));
 
+mongoose.connect('mongodb://localhost:27017/freelancer', { useNewUrlParser: true, useUnifiedTopology: true })
+    .then(() => 'You are now connected to Mongo!')
+    .catch(err => console.error('Something went wrong', err))
+mongoose.set('useCreateIndex', true);
+
+const mongoStore = connectMongo(session);
+
 app.use(require("express-session")({ 
     secret: "HeYC1ttlI0vkDHpUWtd2XxA8j1XpIlnk", 
     resave: false, 
-    saveUninitialized: false
+    saveUninitialized: false,
+    store: new mongoStore({
+        mongooseConnection: mongoose.connection
+    })
 })); 
   
 app.use(passport.initialize()); 
@@ -34,10 +45,6 @@ passport.deserializeUser(User.deserializeUser());
 
 const LocalStrategy = require('passport-local').Strategy; 
 passport.use(new LocalStrategy(User.authenticate())); 
-
-mongoose.connect('mongodb://localhost:27017/freelancer', { useNewUrlParser: true, useUnifiedTopology: true })
-    .then(() => 'You are now connected to Mongo!')
-    .catch(err => console.error('Something went wrong', err))
 
 app.get('/', function(req, res) {
     res.render('pages/index');
@@ -84,6 +91,7 @@ app.post('/auth/login', function(req, res) {
                 if (same) {
                     console.log('login successful')
                     req.session.userId = user._id
+                    
                     res.redirect('/jobs')
                 } else {
                     console.log('login unsuccessful')
