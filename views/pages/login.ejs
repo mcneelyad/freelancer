@@ -14,12 +14,12 @@
         <main>
             <div class="jumbotron">
                 <h2>Login</h2>
-                <br><br>
+                <br>
 
-                <form action="/jobs/save" method="POST">
+                <form action="/auth/login" method="POST">
                     <div class="form-group">
                         <label for="username">Username</label>
-                        <input type="text" name="username" placeholder="Enter your username ..." class="form-control">
+                        <input type="text" name="username" placeholder="Enter your username" class="form-control" required>
                     </div>
 
                     <div class="form-group floating-label-form-group controls">
@@ -28,14 +28,13 @@
                     </div>
                     <button type="submit" class="btn btn-success">Login</button>
                 </form>
+                <br>
 
                 <h5>Dont have an account yet? <a href="/auth/register">Create an account now!</a></h5>
             </div>
         </main>
 
-        <footer>
             <%- include("../partials/footer"); -%>
-        </footer>
 
     </body>
 </html>

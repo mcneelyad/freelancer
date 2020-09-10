@@ -23,12 +23,10 @@
                     <% }) %>
                 <% } %>
 
-                <br><br>
-
                 <form action="/auth/register" method="POST">
                     <div class="form-group">
                         <label for="username">Username</label>
-                        <input type="text" id="username" name="username" placeholder="Enter your username ..." class="form-control">
+                        <input type="text" id="username" name="username" placeholder="Enter your username" class="form-control" required>
                     </div>
 
                     <div class="form-group">
@@ -36,11 +34,13 @@
                         <input type="text" id="email"name="email" placeholder="Enter your email" class="form-control">
                     </div>
 
-                    <div class="form-group>
+                    <div class="form-group">
                         <label for="password">Password</label>
                         <input type="password" id="password" name="password" placeholder="Password" class="form-control">
                     </div>
-                    <br><br>
+
+                    <br>
+                    
                     <button type="submit" class="btn btn-success">Register</button>
                 </form>
             </div>

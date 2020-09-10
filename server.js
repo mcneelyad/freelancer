@@ -63,59 +63,42 @@ app.get('/auth/login', function(req, res) {
 
 app.get("/auth/register", function (req, res) {
     res.render('pages/register')
-});
+});   
 
-app.post("/auth/register", function (req, res) {
-    const { username, email, password } = req.body;
+// app.post("/auth/login", function (req, res) {
+//     const { email, password } = req.body;
+//     console.log(req.body);
+//     // try to find the user
+//     User.findOne({ email }, (error, user) => {
+//         if (user) {
+//             // compare passwords.
+//             bcrypt.compare(password, user.password, (error, same) => {
+//                 if (same) {
+//                     // store user session.
+//                     console.log('user found')
+//                     res.redirect('/jobs')
+//                 } else {
+//                     console.log('passwords dont match');
+//                     res.redirect('/auth/login')
+//                 }
+//             })
+//         } else {
+//             console.log('user not found');
+//             return res.redirect('/auth/login')
+//         }
+//     })
+// });
 
-    let errors = [];
-
-    console.log('Name: ' + username+ ' , Email: ' + email+ ' , Password: ' + password);
-
-    if(!username || !email || !password) {
-        errors.push({msg : "Please fill in all required fields."})
-    }
-
-    if(password.length < 6 ) {
-        errors.push({msg : 'Password must be at least 6 characters long.'})
-    }
-    if(errors.length > 0 ) {
-        res.render('pages/register', {
-            errors : errors,
-            username : username,
-            email : email,
-            password : password
-        })
-    } else {
-        //if it passes validation
-        User.findOne({email : email}).exec((err,user) => {
-            if(user) {
-                errors.push({msg: 'Email is already registered'});
-                render(res,errors,username,email,password);
-            } else {
-                const newUser = new User({ 
-                    username : username, 
-                    email : email, 
-                    password : password
-                });
-                bcrypt.genSalt(10,(err,salt)=> 
-                bcrypt.hash(newUser.password,salt, (err,hash) => {
-                    if(err) throw err;
-                    
-                    //save pass to hash
-                    newUser.password = hash;
-                    
-                    //save user
-                    newUser.save().then((value) => {
-                        res.redirect('/auth/login');
-                    }).catch(value => console.log(value));
-                      
-                }));
-            };
-        }
-    )};
-});    
-    
+// app.post("/auth/register", function (req, res) {
+//     console.log(req.body);
+//     User.create(req.body, (error, user) => {
+//         if (error) {
+//             console.log(error);
+//             return res.render('pages/register')
+//         }
+//         res.redirect('/jobs')
+//     })
+// });
 
 app.listen(5000);
-console.log('server started');
+console.log(`server started`);
