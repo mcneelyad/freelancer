@@ -6,4 +6,4 @@
 
 
 <img src="./readme_assets/HomePage.png" alt="Home Page" width="100%">
-<img src="./readme_assets/JobsPage.png" alt="Jobs Page" width="50%">
+<img src="./readme_assets/JobsPage.png" alt="Jobs Page" width="100%">
