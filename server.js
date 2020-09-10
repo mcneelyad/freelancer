@@ -1,14 +1,15 @@
 const express = require('express');
-const path = require('path')
-const mongoose = require('mongoose')
-const bodyParser = require('body-parser')
+const path = require('path');
+const mongoose = require('mongoose');
+const bodyParser = require('body-parser');
 
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcrypt');
 const session = require('express-session');
-const flash = require('connect-flash');
+const flash = require('express-flash');
+const passport = require('passport');
 
 const Post = require('./database/models/post');
-const User = require('./database/models/user')
+const User = require('./database/models/user');
 
 const app = express();
 
@@ -17,22 +18,31 @@ app.set('views', path.join(__dirname, 'views')); // ../views has all your .ejs f
 app.set('view engine', 'ejs');
 
 app.use(bodyParser.json())
-app.use(bodyParser.urlencoded({
-    extended: true
-}));
+app.use(bodyParser.urlencoded({ extended: true }));
+
+app.use(require("express-session")({ 
+    secret: "HeYC1ttlI0vkDHpUWtd2XxA8j1XpIlnk", 
+    resave: false, 
+    saveUninitialized: false
+})); 
+  
+app.use(passport.initialize()); 
+app.use(passport.session()); 
+
+passport.serializeUser(User.serializeUser()); 
+passport.deserializeUser(User.deserializeUser()); 
+
+const LocalStrategy = require('passport-local').Strategy; 
+passport.use(new LocalStrategy(User.authenticate())); 
 
 mongoose.connect('mongodb://localhost:27017/freelancer', { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => 'You are now connected to Mongo!')
     .catch(err => console.error('Something went wrong', err))
 
-// use res.render to load up an ejs view file
-
-// index page 
 app.get('/', function(req, res) {
     res.render('pages/index');
 });
 
-// jobs page 
 app.get('/jobs', async (req, res) => {
     const posts = await Post.find({})
     res.render('pages/jobs', {
@@ -65,40 +75,48 @@ app.get("/auth/register", function (req, res) {
     res.render('pages/register')
 });   
 
-// app.post("/auth/login", function (req, res) {
-//     const { email, password } = req.body;
-//     console.log(req.body);
-//     // try to find the user
-//     User.findOne({ email }, (error, user) => {
-//         if (user) {
-//             // compare passwords.
-//             bcrypt.compare(password, user.password, (error, same) => {
-//                 if (same) {
-//                     // store user session.
-//                     console.log('user found')
-//                     res.redirect('/jobs')
-//                 } else {
-//                     console.log('passwords dont match');
-//                     res.redirect('/auth/login')
-//                 }
-//             })
-//         } else {
-//             console.log('user not found');
-//             return res.redirect('/auth/login')
-//         }
-//     })
-// });
+app.post('/auth/login', function(req, res) { 
+    const { username, password } = req.body;
 
-// app.post("/auth/register", function (req, res) {
-//     console.log(req.body);
-//     User.create(req.body, (error, user) => {
-//         if (error) {
-//             console.log(error);
-//             return res.render('pages/register')
-//         }
-//         res.redirect('/jobs')
-//     })
-// });
+    User.findOne({ username }, (error, user) => {
+        if (user) {
+            bcrypt.compare(password, user.password, (error, same) => {
+                if (same) {
+                    console.log('login successful')
+                    req.session.userId = user._id
+                    res.redirect('/jobs')
+                } else {
+                    console.log('login unsuccessful')
+                    res.redirect('/auth/login')
+                }
+            })
+        } else {
+            console.log('user not found')
+            return res.redirect('/auth/login')
+        }
+    }); 
+});
+
+app.post("/auth/register", async function (req, res) {
+    var username = req.body.username;
+    var email = req.body.email;
+    var password = req.body.password;
+    
+    User.register(new User({ 
+        username: username, 
+        password: password,
+        email: email 
+    }), password, function (err, user) { 
+        if (err) { 
+            console.log('could not register')
+            console.log(err); 
+            return res.redirect("/auth/register"); 
+        } 
+        passport.authenticate("local")(req, res, function () { 
+            res.redirect("/jobs"); 
+        }); 
+    }); 
+});
 
 app.listen(5000);
 console.log(`server started`);
