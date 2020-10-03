@@ -7,14 +7,16 @@
     </head>
     <body class="container">
 
-        <header>
-            <%- include("../partials/header"); -%>
-        </header>
+        <%- include("../partials/header"); -%>
 
         <main>
             <div class="jumbotron">
                 <h2>Login</h2>
                 <br>
+                
+                <% if ( message.length > 0 ) { %>
+                    <p> <%= message %> </p>
+                  <% } %>
 
                 <form action="/auth/login" method="POST">
                     <div class="form-group">
@@ -24,7 +26,7 @@
 
                     <div class="form-group floating-label-form-group controls">
                         <label for="password">Password</label>
-                        <input type="password" name="password" placeholder="Password" class="form-control">
+                        <input type="password" name="password" placeholder="Enter your password" class="form-control">
                     </div>
                     <button type="submit" class="btn btn-success">Login</button>
                 </form>

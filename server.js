@@ -5,8 +5,7 @@ const bodyParser = require('body-parser');
 
 const bcrypt = require('bcrypt');
 const session = require('express-session');
-const connectMongo = require('connect-mongo');
-const flash = require('express-flash');
+const flash = require('connect-flash');
 const passport = require('passport');
 
 const Post = require('./database/models/post');
@@ -15,74 +14,164 @@ const User = require('./database/models/user');
 const app = express();
 
 // set the view engine to ejs
-app.set('views', path.join(__dirname, 'views')); // ../views has all your .ejs files 
+app.set('views/pages', path.join(__dirname, 'views/pages')); // ../views has all your .ejs files 
 app.set('view engine', 'ejs');
 
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }));
 
-mongoose.connect('mongodb://localhost:27017/freelancer', { useNewUrlParser: true, useUnifiedTopology: true })
+app.use(flash());
+
+mongoose.connect('mongodb://localhost:27017/freelancer',
+    {
+        useNewUrlParser: true,
+        useUnifiedTopology: true
+    })
     .then(() => 'You are now connected to Mongo!')
     .catch(err => console.error('Something went wrong', err))
 mongoose.set('useCreateIndex', true);
 
-const mongoStore = connectMongo(session);
+const mongoStore = require('connect-mongo')(session);
 
-app.use(require("express-session")({ 
-    secret: "HeYC1ttlI0vkDHpUWtd2XxA8j1XpIlnk", 
-    resave: false, 
-    saveUninitialized: false,
-    store: new mongoStore({
-        mongooseConnection: mongoose.connection
-    })
-})); 
-  
-app.use(passport.initialize()); 
-app.use(passport.session()); 
+app.use(require("express-session")(
+    {
+        secret: "HeYC1ttlI0vkDHpUWtd2XxA8j1XpIlnk",
+        saveUninitialized: false,
+        store: new mongoStore({
+            mongooseConnection: mongoose.connection
+        }),
+        resave: true,
+        rolling: true,
+        cookie: {
+            expires: 60 * 1000 * 10
+        }
+    }
+));
 
-passport.serializeUser(User.serializeUser()); 
-passport.deserializeUser(User.deserializeUser()); 
+app.use(passport.initialize());
+app.use(passport.session());
 
-const LocalStrategy = require('passport-local').Strategy; 
-passport.use(new LocalStrategy(User.authenticate())); 
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
 
-app.get('/', function(req, res) {
-    res.render('pages/index');
+const LocalStrategy = require('passport-local').Strategy;
+passport.use(new LocalStrategy(User.authenticate(),
+    function (email, password, done) {
+        User.findOne({ 'local.email': email }, function (err, user) {
+            if (err)
+                return done(err);
+            if (!user)
+                return done(null, false, { message: 'No user with this email.' });
+            if (!user.validPassword(password))
+                return done(null, false, { message: 'Oops! Incorrect password.' });
+            return done(null, user);
+        })
+    }));
+
+function isLoggedIn(req, res, next) {
+    if (req.isAuthenticated()) {
+        req.isLogged = true
+        return next();
+    }
+    res.redirect('/');
+}
+
+app.get('/', function (req, res) {
+    res.render('pages/index', {
+        userId: req.session.userId,
+        firstName: req.session.firstName,
+        username: req.session.username,
+        isLoggedIn: req.session.loggedIn,
+    });
 });
 
 app.get('/jobs', async (req, res) => {
     const posts = await Post.find({})
     res.render('pages/jobs', {
-        posts
-    })
+        posts,
+        userId: req.session.userId,
+        firstName: req.session.firstName,
+        username: req.session.username,
+        isLoggedIn: req.session.loggedIn,
+    });
 });
 
 app.get('/jobs/new', (req, res) => {
-    res.render('pages/new-post')
+    res.render('pages/new-post', {
+        userId: req.session.userId,
+        firstName: req.session.firstName,
+        username: req.session.username,
+        isLoggedIn: req.session.loggedIn,
+    });
 });
 
 app.get('/jobs/:id', async (req, res) => {
     const post = await Post.findById(req.params.id)
     res.render('pages/post', {
-        post
-    })
+        post,
+        posted_by: post.posted_by,
+        userId: req.session.userId,
+        firstName: req.session.firstName,
+        username: req.session.username,
+        isLoggedIn: req.session.loggedIn,
+    });
+});
+
+app.post('/jobs/delete/:id', function (req, res) {
+    Post.deleteOne({ _id: req.params.id })
+        .then(result => {
+            res.redirect('/jobs')
+        })
+        .catch(error => console.error(error))
+
 });
 
 app.post('/jobs/save', (req, res) => {
-    Post.create(req.body, (error, post) => {
+    var title = req.body.title;
+    var description = req.body.description;
+    var posted_by = req.session.username;
+
+    Post.create({
+        title: title,
+        description: description,
+        posted_by: posted_by
+    }, (error, post) => {
         res.redirect('/jobs')
     })
 });
 
-app.get('/auth/login', function(req, res) {
-    res.render('pages/login')
+app.get('/user/:id', (req, res) => {
+    // console.log(req.session);
+    res.render('pages/user', {
+        userId: req.session.userId,
+        firstName: req.session.firstName,
+        lastName: req.session.lastName,
+        email: req.session.email,
+        username: req.session.username,
+        isLoggedIn: req.session.loggedIn,
+    });
+});
+
+app.get('/auth/login', function (req, res) {
+    res.render('pages/login', {
+        message: req.flash('error'),
+        userId: req.session.userId,
+        firstName: req.session.firstName,
+        username: req.session.username,
+        isLoggedIn: req.session.loggedIn,
+    });
 });
 
 app.get("/auth/register", function (req, res) {
-    res.render('pages/register')
-});   
+    res.render('pages/register', {
+        userId: req.session.userId,
+        firstName: req.session.firstName,
+        username: req.session.username,
+        isLoggedIn: req.session.loggedIn,
+    });
+});
 
-app.post('/auth/login', function(req, res) { 
+app.post('/auth/login', function (req, res) {
     const { username, password } = req.body;
 
     User.findOne({ username }, (error, user) => {
@@ -90,40 +179,59 @@ app.post('/auth/login', function(req, res) {
             bcrypt.compare(password, user.password, (error, same) => {
                 if (same) {
                     console.log('login successful')
-                    req.session.userId = user._id
-                    
+                    req.session.loggedIn = true;
+                    req.session.userId = user._id;
+                    req.session.username = user.username;
+                    req.session.firstName = user.firstName;
+                    req.session.lastName = user.lastName;
+                    req.session.email = user.email;
+
                     res.redirect('/jobs')
                 } else {
                     console.log('login unsuccessful')
-                    res.redirect('/auth/login')
+                    res.redirect('/auth/login', {
+                        message: 'login unsuccessful'
+                    })
                 }
             })
         } else {
             console.log('user not found')
             return res.redirect('/auth/login')
         }
-    }); 
+    });
 });
 
 app.post("/auth/register", async function (req, res) {
+
     var username = req.body.username;
     var email = req.body.email;
     var password = req.body.password;
-    
-    User.register(new User({ 
-        username: username, 
+    var firstName = req.body.firstName;
+    var lastName = req.body.lastName;
+
+
+    User.register(new User({
+        username: username,
         password: password,
-        email: email 
-    }), password, function (err, user) { 
-        if (err) { 
+        email: email,
+        firstName: firstName,
+        lastName: lastName
+    }), password, function (err, user) {
+        if (err) {
             console.log('could not register')
-            console.log(err); 
-            return res.redirect("/auth/register"); 
-        } 
-        passport.authenticate("local")(req, res, function () { 
-            res.redirect("/jobs"); 
-        }); 
-    }); 
+            console.log(err);
+            return res.redirect("/auth/register");
+        }
+        passport.authenticate("local")(req, res, function () {
+            res.redirect("/auth/login");
+        });
+    });
+});
+
+app.get('/auth/logout', function (req, res) {
+    req.session.destroy(() => {
+        res.redirect('/')
+    })
 });
 
 app.listen(5000);

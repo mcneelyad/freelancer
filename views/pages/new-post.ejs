@@ -7,17 +7,13 @@
     </head>
     <body class="container">
 
-        <header>
-            <%- include("../partials/header"); -%>
-        </header>
+        <%- include("../partials/header"); -%>
 
         <main>
             <div class="jumbotron">
                 <div class="container">
-                    <!-- <div class="row"> -->
                         <h2>Create a new job</h2>
                         <p>Fill out the form to submit a new job post</p>     
-                    <!-- </div>    -->
 
                     <form action="/jobs/save" method="POST">
                         <div class="form-group">

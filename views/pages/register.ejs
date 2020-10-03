@@ -7,9 +7,7 @@
     </head>
     <body class="container">
 
-        <header>
-            <%- include("../partials/header"); -%>
-        </header>
+        <%- include("../partials/header"); -%>
 
         <main>
             <div class="jumbotron">
@@ -25,18 +23,28 @@
 
                 <form action="/auth/register" method="POST">
                     <div class="form-group">
+                        <label for="firstName">First Name</label>
+                        <input type="text" id="firstName" name="firstName" class="form-control" placeholder="Enter your first name" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="lastName">Last Name</label>
+                        <input type="text" id="lastName" name="lastName" class="form-control" placeholder="Enter your last name" required>
+                    </div>
+
+                    <div class="form-group">
                         <label for="username">Username</label>
-                        <input type="text" id="username" name="username" placeholder="Enter your username" class="form-control" required>
+                        <input type="text" id="username" name="username" class="form-control" placeholder="Enter your username" required>
                     </div>
 
                     <div class="form-group">
                         <label for="email">Email</label>
-                        <input type="text" id="email"name="email" placeholder="Enter your email" class="form-control">
+                        <input type="text" id="email"name="email" class="form-control" placeholder="Enter your email" required>
                     </div>
 
                     <div class="form-group">
                         <label for="password">Password</label>
-                        <input type="password" id="password" name="password" placeholder="Password" class="form-control">
+                        <input type="password" id="password" name="password" class="form-control" placeholder="Enter your password" required>
                     </div>
 
                     <br>

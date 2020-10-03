@@ -1,5 +1,3 @@
-<!-- views/pages/jobs.ejs -->
-
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -7,20 +5,23 @@
     </head>
     <body class="container">
 
-        <header>
-            <%- include("../partials/header"); -%>
-        </header>
+        <%- include("../partials/header"); -%>
 
         <main>
             <div class="jumbotron">
 
-                <a class="btn btn-primary" href="/jobs/new" role="button">Create a new concept/idea post</a>
-                <br><br>
+                <% if (isLoggedIn) { %> 
+                    <a class="btn btn-primary" href="/jobs/new" role="button">Create a new concept/idea post</a>
+                    <br><br>
+                <% } else { %> 
+                    <p>You must be loggedin to post a new concept/idea</p>
+                    <br>
+                <% } %> 
                 <div class="list-group">
                     <% posts.forEach(function(post){ %>
                         <div class="list-group-item">
                             <a href="/jobs/<%= post._id %>"><%= post["title"] %></a><br>
-                            <span class="d-inline-block text-truncate" style="width: 100%;">
+                            <span class="d-inline-block text-truncate" style="width: 100%; font-size: smaller;">
                                 <em><%= post["description"] %> </em>
                             </span>
                         </div>   

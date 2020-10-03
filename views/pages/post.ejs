@@ -7,16 +7,25 @@
     </head>
     <body class="container">
 
-        <header>
-            <%- include("../partials/header"); -%>
-        </header>
+        <%- include("../partials/header"); -%>
 
         <main>
             <div class="jumbotron">
-                <h2><%= post["title"] %></h2>
+                <h2><%= post["title"] %></h2><hr>
+                <% if(posted_by == username) { %> 
+                    <p>Posted by <b><em>you</em></b></p><br><br>
+                <% } else { %> 
+                    <p>Posted by <b><em><%= post["posted_by"] %></em></b></p><br><br>
+                <% } %> 
                 <article>
                     <p><%= post["description"] %></p>
                 </article>
+                <br><br>
+                <% if(posted_by == username) { %> 
+                    <form action="/jobs/delete/<%= post._id %>" method="POST">
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                <% } %> 
             </div>
         </main>
 
