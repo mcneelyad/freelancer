@@ -2,41 +2,42 @@
 
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <%- include("../partials/head"); -%>
-    </head>
-    <body class="container">
 
-        <%- include("../partials/header"); -%>
+<head>
+    <%- include("../partials/head"); -%>
+</head>
 
-        <main>
-            <div class="jumbotron">
-                <h2>Login</h2>
-                <br>
-                
-                <% if ( message.length > 0 ) { %>
-                    <p> <%= message %> </p>
-                  <% } %>
+<body class="container">
 
-                <form action="/auth/login" method="POST">
-                    <div class="form-group">
-                        <label for="username">Username</label>
-                        <input type="text" name="username" placeholder="Enter your username" class="form-control" required>
-                    </div>
+    <%- include("../partials/header"); -%>
 
-                    <div class="form-group floating-label-form-group controls">
-                        <label for="password">Password</label>
-                        <input type="password" name="password" placeholder="Enter your password" class="form-control">
-                    </div>
-                    <button type="submit" class="btn btn-success">Login</button>
-                </form>
-                <br>
+    <main>
+        <div class="jumbotron">
+            <h2>Login</h2>
+            <br>
 
-                <h5>Dont have an account yet? <a href="/auth/register">Create an account now!</a></h5>
-            </div>
-        </main>
 
-            <%- include("../partials/footer"); -%>
 
-    </body>
+            <form action="/auth/login" method="POST">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" name="username" placeholder="Enter your username" class="form-control" required>
+                </div>
+
+                <div class="form-group floating-label-form-group controls">
+                    <label for="password">Password</label>
+                    <input type="password" name="password" placeholder="Enter your password" class="form-control">
+                </div>
+                <button type="submit" class="btn btn-success">Login</button>
+            </form>
+            <br>
+
+            <h5>Dont have an account yet? <a href="/auth/register">Create an account now!</a></h5>
+        </div>
+    </main>
+
+    <%- include("../partials/footer"); -%>
+
+</body>
+
 </html>

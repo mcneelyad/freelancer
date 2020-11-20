@@ -2,36 +2,62 @@
 
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <%- include("../partials/head"); -%>
-    </head>
-    <body class="container">
 
-        <%- include("../partials/header"); -%>
+<head>
+    <%- include("../partials/head"); -%>
+</head>
 
-        <main>
-            <div class="jumbotron">
-                <h2><%= post["title"] %></h2><hr>
-                <% if(posted_by == username) { %> 
-                    <p>Posted by <b><em>you</em></b></p><br><br>
-                <% } else { %> 
-                    <p>Posted by <b><em><%= post["posted_by"] %></em></b></p><br><br>
-                <% } %> 
-                <article>
-                    <p><%= post["description"] %></p>
-                </article>
-                <br><br>
-                <% if(posted_by == username) { %> 
-                    <form action="/jobs/delete/<%= post._id %>" method="POST">
-                        <button type="submit" class="btn btn-danger">Delete</button>
-                    </form>
-                <% } %> 
+<body class="container">
+
+    <%- include("../partials/header"); -%>
+
+    <main>
+        <div class="jumbotron">
+            <h2><%= post["title"] %></h2>
+            <hr>
+            <% if(posted_by == username) { %>
+            <p>Posted by <b>you</b></p><br><br>
+            <% } else { %>
+            <p>Posted by <b><%= post["posted_by"] %></b></p><br><br>
+            <% } %>
+            <article>
+                <p><%= post["description"] %></p>
+            </article>
+            <br><br>
+            <% if(posted_by == username) { %>
+            <button type="button" class="btn btn-info btn-lg btn-danger" data-toggle="modal"
+                data-target="#modal">Delete</button>
+
+            <div class="modal fade" id="modal" role="dialog">
+                <div class="modal-dialog">
+                    <!-- Modal content-->
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title">Are you sure?</h4>
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+
+                        </div>
+                        <div class="modal-body">
+                            <div class="btn-group">
+                                <form action="/jobs/delete/<%= post._id %>" method="POST">
+                                    <button type="submit" class="btn btn-danger">Yes, I'm sure.</button>
+                                </form>
+                                <button type="button" class="btn btn-default btn-primary" data-dismiss="modal"
+                                    style="margin-left: 5px;">No, I'm not.</button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
             </div>
-        </main>
+            <% } %>
+        </div>
+    </main>
 
-        <footer>
-            <%- include("../partials/footer"); -%>
-        </footer>
+    <footer>
+        <%- include("../partials/footer"); -%>
+    </footer>
 
-    </body>
+</body>
+
 </html>

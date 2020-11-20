@@ -13,14 +13,6 @@
             <div class="jumbotron">
                 <h2>Register</h2><br>
 
-                <% if(typeof errors != 'undefined') { %>
-                    <% errors.forEach(function(error){ %>
-                        <ul>
-                            <li style="list-style-type: none; color: red;"> <%= error.msg %></li>
-                        </ul>
-                    <% }) %>
-                <% } %>
-
                 <form action="/auth/register" method="POST">
                     <div class="form-group">
                         <label for="firstName">First Name</label>

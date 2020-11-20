@@ -14,7 +14,7 @@ const User = require('./database/models/user');
 const app = express();
 
 // set the view engine to ejs
-app.set('views/pages', path.join(__dirname, 'views/pages')); // ../views has all your .ejs files 
+app.set('views/pages', path.join(__dirname, 'views/pages'));
 app.set('view engine', 'ejs');
 
 app.use(bodyParser.json())
@@ -25,7 +25,8 @@ app.use(flash());
 mongoose.connect('mongodb://localhost:27017/freelancer',
     {
         useNewUrlParser: true,
-        useUnifiedTopology: true
+        useUnifiedTopology: true,
+        useFindAndModify: false
     })
     .then(() => 'You are now connected to Mongo!')
     .catch(err => console.error('Something went wrong', err))
@@ -141,7 +142,6 @@ app.post('/jobs/save', (req, res) => {
 });
 
 app.get('/user/:id', (req, res) => {
-    // console.log(req.session);
     res.render('pages/user', {
         userId: req.session.userId,
         firstName: req.session.firstName,
@@ -154,11 +154,10 @@ app.get('/user/:id', (req, res) => {
 
 app.get('/auth/login', function (req, res) {
     res.render('pages/login', {
-        message: req.flash('error'),
         userId: req.session.userId,
         firstName: req.session.firstName,
         username: req.session.username,
-        isLoggedIn: req.session.loggedIn,
+        isLoggedIn: req.session.loggedIn
     });
 });
 
@@ -167,11 +166,12 @@ app.get("/auth/register", function (req, res) {
         userId: req.session.userId,
         firstName: req.session.firstName,
         username: req.session.username,
-        isLoggedIn: req.session.loggedIn,
+        isLoggedIn: req.session.loggedIn
     });
 });
 
 app.post('/auth/login', function (req, res) {
+    let errors = [];
     const { username, password } = req.body;
 
     User.findOne({ username }, (error, user) => {
@@ -186,16 +186,17 @@ app.post('/auth/login', function (req, res) {
                     req.session.lastName = user.lastName;
                     req.session.email = user.email;
 
+                    req.flash('success', 'login successful')
                     res.redirect('/jobs')
                 } else {
                     console.log('login unsuccessful')
-                    res.redirect('/auth/login', {
-                        message: 'login unsuccessful'
-                    })
+                    req.flash('error', 'login unsuccessful')
+                    res.redirect('/auth/login')
                 }
             })
         } else {
             console.log('user not found')
+            req.flash('error', 'user not found')
             return res.redirect('/auth/login')
         }
     });
@@ -219,7 +220,8 @@ app.post("/auth/register", async function (req, res) {
     }), password, function (err, user) {
         if (err) {
             console.log('could not register')
-            console.log(err);
+            console.log(err)
+            req.flash('error', 'could not register user')
             return res.redirect("/auth/register");
         }
         passport.authenticate("local")(req, res, function () {
@@ -228,11 +230,38 @@ app.post("/auth/register", async function (req, res) {
     });
 });
 
+app.post("/user/edit/:id", async (req, res) => {
+    // console.log(req.body);
+    let userId = req.params.id;
+    const user = User.findByIdAndUpdate(userId, {
+        $set: {
+            firstName: req.body.firstName,
+            lastName: req.body.lastName,
+            email: req.body.email
+        }
+    }, function (err) {
+        if (err) console.log(err);
+        res.render('pages/user', {
+            userId: req.session.userId,
+            firstName: req.body.firstName,
+            lastName: req.body.lastName,
+            username: req.session.username,
+            email: req.body.email,
+            isLoggedIn: req.session.loggedIn
+        });
+    });
+});
+
 app.get('/auth/logout', function (req, res) {
     req.session.destroy(() => {
         res.redirect('/')
-    })
+    });
 });
 
-app.listen(5000);
-console.log(`server started`);
+app.get("*", (req, res) => {
+    res.render('pages/404');
+})
+
+app.listen(5000, () => {
+    console.log(`server started`);
+});
