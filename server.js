@@ -10,6 +10,7 @@ const passport = require('passport');
 
 const Post = require('./database/models/post');
 const User = require('./database/models/user');
+const UserInterested = require('./database/models/user_interested');
 
 const app = express();
 
@@ -49,6 +50,14 @@ app.use(require("express-session")(
     }
 ));
 
+app.use(function (req, res, next) {
+    res.locals.success_msg = req.flash('success_msg');
+    res.locals.error_msg = req.flash('error_msg');
+    res.locals.error = req.flash('error');
+    res.locals.users = req.user || null;
+    next();
+});
+
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -68,14 +77,6 @@ passport.use(new LocalStrategy(User.authenticate(),
             return done(null, user);
         })
     }));
-
-function isLoggedIn(req, res, next) {
-    if (req.isAuthenticated()) {
-        req.isLogged = true
-        return next();
-    }
-    res.redirect('/');
-}
 
 app.get('/', function (req, res) {
     res.render('pages/index', {
@@ -108,6 +109,8 @@ app.get('/jobs/new', (req, res) => {
 
 app.get('/jobs/:id', async (req, res) => {
     const post = await Post.findById(req.params.id)
+    // console.log(req.session.userId);
+    console.log(post._id);
     res.render('pages/post', {
         post,
         posted_by: post.posted_by,
@@ -127,6 +130,19 @@ app.post('/jobs/delete/:id', function (req, res) {
 
 });
 
+app.post('/jobs/:id/interested', (req, res) => {
+    const post = Post.find({"_id": req.params.id});
+    UserInterested.create({
+        user_id: req.session.userId,
+        username: req.session.username,
+        post_id: post.id,
+        post_title: post.title
+    }, (error, post) => {
+        console.log(error);
+    });
+    res.redirect('/user/:id');
+});
+
 app.post('/jobs/save', (req, res) => {
     var title = req.body.title;
     var description = req.body.description;
@@ -141,8 +157,11 @@ app.post('/jobs/save', (req, res) => {
     })
 });
 
-app.get('/user/:id', (req, res) => {
+app.get('/user/:id', async (req, res) => {
+    const userInterests = await UserInterested.find({});
+    // console.log(userInterests);
     res.render('pages/user', {
+        userInterests,
         userId: req.session.userId,
         firstName: req.session.firstName,
         lastName: req.session.lastName,
@@ -186,17 +205,17 @@ app.post('/auth/login', function (req, res) {
                     req.session.lastName = user.lastName;
                     req.session.email = user.email;
 
-                    req.flash('success', 'login successful')
+                    req.flash('success_msg', 'login successful')
                     res.redirect('/jobs')
                 } else {
                     console.log('login unsuccessful')
-                    req.flash('error', 'login unsuccessful')
+                    req.flash('error_msg', 'login unsuccessful')
                     res.redirect('/auth/login')
                 }
             })
         } else {
             console.log('user not found')
-            req.flash('error', 'user not found')
+            req.flash('error_msg', 'user not found')
             return res.redirect('/auth/login')
         }
     });
@@ -221,8 +240,8 @@ app.post("/auth/register", async function (req, res) {
         if (err) {
             console.log('could not register')
             console.log(err)
-            req.flash('error', 'could not register user')
-            return res.redirect("/auth/register");
+            req.flash('error_msg', 'could not register user')
+            res.redirect("/auth/login");
         }
         passport.authenticate("local")(req, res, function () {
             res.redirect("/auth/login");

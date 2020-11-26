@@ -12,6 +12,18 @@
     <main>
         <div class="jumbotron">
 
+            <% if (error.length > 0){ %>
+                <div class="alert alert-danger"><%= error %></div>
+            <% } %>
+
+            <% if (success_msg.length > 0){ %>
+                <div class="alert alert-success"><%= success_msg %></div>
+            <% } %>
+
+            <% if (error_msg.length > 0){ %>
+                <div class="alert alert-danger"><%= error_msg %></div>
+            <% } %>
+
             <% if (isLoggedIn) { %>
                 <a class="btn btn-primary" href="/jobs/new" role="button">Create a new concept/idea post</a>
                 <br><br>
@@ -20,7 +32,7 @@
                 <br>
             <% } %>
 
-            <div class="list-group">
+            <div class="list-group list-group-flush">
                 <% posts.forEach(function(post){ %>
                     <div class="list-group-item">
                         <a href="/jobs/<%= post._id %>"><%= post["title"] %></a> 
