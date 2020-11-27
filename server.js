@@ -109,8 +109,6 @@ app.get('/jobs/new', (req, res) => {
 
 app.get('/jobs/:id', async (req, res) => {
     const post = await Post.findById(req.params.id)
-    // console.log(req.session.userId);
-    console.log(post._id);
     res.render('pages/post', {
         post,
         posted_by: post.posted_by,
@@ -126,21 +124,20 @@ app.post('/jobs/delete/:id', function (req, res) {
         .then(result => {
             res.redirect('/jobs')
         })
-        .catch(error => console.error(error))
-
+        .catch(error => console.error(error));
 });
 
-app.post('/jobs/:id/interested', (req, res) => {
-    const post = Post.find({"_id": req.params.id});
+app.post('/jobs/interested/:id', async (req, res) => {
+    const post = await Post.findById(req.params.id);
     UserInterested.create({
         user_id: req.session.userId,
         username: req.session.username,
-        post_id: post.id,
+        post_id: post._id,
         post_title: post.title
-    }, (error, post) => {
+    }, (error) => {
         console.log(error);
     });
-    res.redirect('/user/:id');
+    res.redirect('/user/'+req.session.userId);
 });
 
 app.post('/jobs/save', (req, res) => {
@@ -229,7 +226,6 @@ app.post("/auth/register", async function (req, res) {
     var firstName = req.body.firstName;
     var lastName = req.body.lastName;
 
-
     User.register(new User({
         username: username,
         password: password,
@@ -250,7 +246,7 @@ app.post("/auth/register", async function (req, res) {
 });
 
 app.post("/user/edit/:id", async (req, res) => {
-    // console.log(req.body);
+    const userInterests = await UserInterested.find({});    
     let userId = req.params.id;
     const user = User.findByIdAndUpdate(userId, {
         $set: {
@@ -260,14 +256,15 @@ app.post("/user/edit/:id", async (req, res) => {
         }
     }, function (err) {
         if (err) console.log(err);
-        res.render('pages/user', {
-            userId: req.session.userId,
-            firstName: req.body.firstName,
-            lastName: req.body.lastName,
-            username: req.session.username,
-            email: req.body.email,
-            isLoggedIn: req.session.loggedIn
-        });
+    });
+    res.render('pages/user', {
+        userInterests: userInterests,
+        userId: req.session.userId,
+        firstName: req.body.firstName,
+        lastName: req.body.lastName,
+        username: req.session.username,
+        email: req.body.email,
+        isLoggedIn: req.session.loggedIn
     });
 });
 

@@ -55,8 +55,9 @@
                         </div>
                     </div>
                 <% } else { %>
-                    <form action="/jobs/:id/interested" method='POST'>
-                        <button type="submit" name="interested" class="btn btn-info"id="interested">I'm interested</button>
+
+                    <form action="/jobs/interested/<%= post._id %>" method='POST'>
+                        <button type="submit" class="btn btn-info">I'm interested</button>
                     </form>
                     <p style="font-size: smaller;padding-top: 0.5rem;">
                         <em>This will add this idea to your list of projects in your account page.</em>

@@ -50,10 +50,12 @@
                 <hr>
                 <p>My Jobs</p>
                 <% if (userInterests) { %>
-                    <% for(var i = 0; i < userInterests.length; i++) { %>
-                        <ul>
-                            <li><%= userInterests[i].id %> </li>
-                        </ul>
+                    <% for(var i=0; i < userInterests.length; i++) { %>
+                        <% if (username == userInterests[i].username) { %> 
+                            <ul>
+                                <li><%= userInterests[i].post_title %> </li>
+                            </ul>
+                        <% } %> 
                     <% } %>
                 <% } %>
             </div>
