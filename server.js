@@ -51,10 +51,18 @@ app.use(require("express-session")(
 ));
 
 app.use(function (req, res, next) {
-    res.locals.success_msg = req.flash('success_msg');
-    res.locals.error_msg = req.flash('error_msg');
+    res.locals.success = req.flash('success');
     res.locals.error = req.flash('error');
     res.locals.users = req.user || null;
+
+    if (!req.session) res.render('pages/login');
+    
+    // SESSION VARIABLES
+    userId = req.session.userId;
+    firstName = req.session.firstName;
+    lastName = req.session.lastName;
+    username = req.session.username;
+    isLoggedIn = req.session.loggedIn;
     next();
 });
 
@@ -79,43 +87,29 @@ passport.use(new LocalStrategy(User.authenticate(),
     }));
 
 app.get('/', function (req, res) {
-    res.render('pages/index', {
-        userId: req.session.userId,
-        firstName: req.session.firstName,
-        username: req.session.username,
-        isLoggedIn: req.session.loggedIn,
-    });
+    res.render('pages/index');
 });
 
 app.get('/jobs', async (req, res) => {
     const posts = await Post.find({})
     res.render('pages/jobs', {
-        posts,
-        userId: req.session.userId,
-        firstName: req.session.firstName,
-        username: req.session.username,
-        isLoggedIn: req.session.loggedIn,
+        posts
     });
 });
 
 app.get('/jobs/new', (req, res) => {
-    res.render('pages/new-post', {
-        userId: req.session.userId,
-        firstName: req.session.firstName,
-        username: req.session.username,
-        isLoggedIn: req.session.loggedIn,
-    });
+    res.render('pages/new-post');
 });
 
 app.get('/jobs/:id', async (req, res) => {
     const post = await Post.findById(req.params.id)
+    const userInterests = await UserInterested.find({});
+    
     res.render('pages/post', {
+        userInterests,
         post,
         posted_by: post.posted_by,
-        userId: req.session.userId,
-        firstName: req.session.firstName,
-        username: req.session.username,
-        isLoggedIn: req.session.loggedIn,
+        postID: post._id
     });
 });
 
@@ -130,14 +124,14 @@ app.post('/jobs/delete/:id', function (req, res) {
 app.post('/jobs/interested/:id', async (req, res) => {
     const post = await Post.findById(req.params.id);
     UserInterested.create({
-        user_id: req.session.userId,
-        username: req.session.username,
+        user_id: userId,
+        username: username,
         post_id: post._id,
         post_title: post.title
     }, (error) => {
         console.log(error);
     });
-    res.redirect('/user/'+req.session.userId);
+    res.redirect('/user/'+userId);
 });
 
 app.post('/jobs/save', (req, res) => {
@@ -156,38 +150,23 @@ app.post('/jobs/save', (req, res) => {
 
 app.get('/user/:id', async (req, res) => {
     const userInterests = await UserInterested.find({});
-    // console.log(userInterests);
+    const posts = await Post.find({});
     res.render('pages/user', {
         userInterests,
-        userId: req.session.userId,
-        firstName: req.session.firstName,
-        lastName: req.session.lastName,
-        email: req.session.email,
-        username: req.session.username,
-        isLoggedIn: req.session.loggedIn,
+        posts,
+        email: req.session.email
     });
 });
 
 app.get('/auth/login', function (req, res) {
-    res.render('pages/login', {
-        userId: req.session.userId,
-        firstName: req.session.firstName,
-        username: req.session.username,
-        isLoggedIn: req.session.loggedIn
-    });
+    res.render('pages/login');
 });
 
 app.get("/auth/register", function (req, res) {
-    res.render('pages/register', {
-        userId: req.session.userId,
-        firstName: req.session.firstName,
-        username: req.session.username,
-        isLoggedIn: req.session.loggedIn
-    });
+    res.render('pages/register');
 });
 
 app.post('/auth/login', function (req, res) {
-    let errors = [];
     const { username, password } = req.body;
 
     User.findOne({ username }, (error, user) => {
@@ -202,17 +181,17 @@ app.post('/auth/login', function (req, res) {
                     req.session.lastName = user.lastName;
                     req.session.email = user.email;
 
-                    req.flash('success_msg', 'login successful')
+                    req.flash('success', 'login successful')
                     res.redirect('/jobs')
                 } else {
                     console.log('login unsuccessful')
-                    req.flash('error_msg', 'login unsuccessful')
+                    req.flash('error', 'email or password incorrect. please try again')
                     res.redirect('/auth/login')
                 }
             })
         } else {
             console.log('user not found')
-            req.flash('error_msg', 'user not found')
+            req.flash('error', 'user not found')
             return res.redirect('/auth/login')
         }
     });
@@ -236,7 +215,7 @@ app.post("/auth/register", async function (req, res) {
         if (err) {
             console.log('could not register')
             console.log(err)
-            req.flash('error_msg', 'could not register user')
+            req.flash('error', 'could not register user')
             res.redirect("/auth/login");
         }
         passport.authenticate("local")(req, res, function () {
@@ -259,12 +238,7 @@ app.post("/user/edit/:id", async (req, res) => {
     });
     res.render('pages/user', {
         userInterests: userInterests,
-        userId: req.session.userId,
-        firstName: req.body.firstName,
-        lastName: req.body.lastName,
-        username: req.session.username,
-        email: req.body.email,
-        isLoggedIn: req.session.loggedIn
+        email: req.body.email
     });
 });
 

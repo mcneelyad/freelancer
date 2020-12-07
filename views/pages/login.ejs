@@ -13,20 +13,16 @@
 
     <main>
         <div class="jumbotron">
-            <h2>Login</h2>
-            <br>
-
             <% if (error.length > 0){ %>
                 <div class="alert alert-danger"><%= error %></div>
             <% } %>
 
-            <% if (success_msg.length > 0){ %>
-                <div class="alert alert-success"><%= success_msg %></div>
+            <% if (success.length > 0){ %>
+                <div class="alert alert-success"><%= success %></div>
             <% } %>
 
-            <% if (error_msg.length > 0){ %>
-                <div class="alert alert-danger"><%= error_msg %></div>
-            <% } %>
+            <h2>Login</h2>
+            <br>
 
             <form action="/auth/login" method="POST">
                 <div class="form-group">

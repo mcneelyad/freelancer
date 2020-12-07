@@ -16,15 +16,15 @@
             <h2><%= post["title"] %></h2>
             <hr>
             <% if(posted_by == username) { %>
-            <p>Posted by <b>you</b></p><br><br>
+                <p>Posted by <b>You</b></p><br><br>
             <% } else { %>
-            <p>Posted by <b><%= post["posted_by"] %></b></p><br><br>
+                <p>Posted by <b><%= post["posted_by"] %></b></p><br><br>
             <% } %>
-            <article>
-                <p><%= post["description"] %></p>
-            </article>
+                <article>
+                    <p><%= post["description"] %></p>
+                </article>
 
-            <br><br>
+                <br><br>
 
             <% if(isLoggedIn) { %>
 
@@ -56,12 +56,21 @@
                     </div>
                 <% } else { %>
 
-                    <form action="/jobs/interested/<%= post._id %>" method='POST'>
-                        <button type="submit" class="btn btn-info">I'm interested</button>
-                    </form>
-                    <p style="font-size: smaller;padding-top: 0.5rem;">
-                        <em>This will add this idea to your list of projects in your account page.</em>
-                    </p>
+                    <% var userInterested = false %> 
+                    <% for(var i=0; i < userInterests.length; i++) { %>
+                        <% if ((username == userInterests[i].username)  && (postID == userInterests[i].post_id)){ %> 
+                            <% userInterested = true; %>
+                            <% break; %> 
+                        <% } %>
+                    <% } %>
+                    
+                    <% if (userInterested) { %> 
+                        <p><em>You're already interested in this idea</em></p>
+                    <% } else { %> 
+                        <form action="/jobs/interested/<%= post._id %>" method='POST'>
+                            <button type="submit" class="btn btn-info">I'm interested</button>
+                        </form>
+                    <% } %>
                 <% } %>
             <% } %>
         </div>

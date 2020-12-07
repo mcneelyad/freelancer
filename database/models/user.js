@@ -32,10 +32,10 @@ const UserSchema  = new mongoose.Schema({
 });
 
 UserSchema.pre('save', function (next) {
-    const user = this
+    const user = this;
  
     bcrypt.hash(user.password, 10, function (error, encrypted) {
-        user.password = encrypted
+        user.password = encrypted;
         next()
     })
 })

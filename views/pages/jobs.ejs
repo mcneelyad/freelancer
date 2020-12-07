@@ -16,12 +16,8 @@
                 <div class="alert alert-danger"><%= error %></div>
             <% } %>
 
-            <% if (success_msg.length > 0){ %>
-                <div class="alert alert-success"><%= success_msg %></div>
-            <% } %>
-
-            <% if (error_msg.length > 0){ %>
-                <div class="alert alert-danger"><%= error_msg %></div>
+            <% if (success.length > 0){ %>
+                <div class="alert alert-success"><%= success %></div>
             <% } %>
 
             <% if (isLoggedIn) { %>
@@ -36,7 +32,8 @@
                 <% posts.forEach(function(post){ %>
                     <div class="list-group-item">
                         <a href="/jobs/<%= post._id %>"><%= post["title"] %></a> 
-                        - <span style="font-size: smaller;"> <%= post["created_at"].toDateString() %></span>
+                        - 
+                        <span style="font-size: smaller;"> <%= post["created_at"].toDateString() %></span>
                         <br><br>
                         <span class="d-inline-block text-truncate" style="width: 100%; font-size: smaller;">
                             <em><%= post["description"] %> </em> 
