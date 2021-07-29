@@ -1,11 +1,19 @@
+
 # freelancer
 
-## Description
+A full-stack web application where users can post 
+software ideas and freelancers can create the idea and 
+then can sell it to the user.
 
-A web application that allows users to post ideas for apps and websites and have freelance software developers and software engineers design and develop the idea and then present it to the original user and then they would decide who's design and implementation of it was the best. 
+## Tech Stack
 
-<hr>
+**Client:** EJS, BootstrapCSS
 
-<img src="./readme_assets/HomePage.png" alt="Home Page" width="100%">
-<br>
-<img src="./readme_assets/JobsPage.png" alt="Jobs Page" width="100%">
+**Server:** Node, Express, Mongoose
+
+  
+## Authors
+
+- [@mcneelyad](https://www.github.com/mcneelyad)
+
+  

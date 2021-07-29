@@ -14,7 +14,6 @@ const UserInterested = require('./database/models/user_interested');
 
 const app = express();
 
-// set the view engine to ejs
 app.set('views/pages', path.join(__dirname, 'views/pages'));
 app.set('view engine', 'ejs');
 
@@ -225,7 +224,8 @@ app.post("/auth/register", async function (req, res) {
 });
 
 app.post("/user/edit/:id", async (req, res) => {
-    const userInterests = await UserInterested.find({});    
+    const userInterests = await UserInterested.find({});   
+    const posts = await Post.find({}); 
     let userId = req.params.id;
     const user = User.findByIdAndUpdate(userId, {
         $set: {
@@ -236,10 +236,13 @@ app.post("/user/edit/:id", async (req, res) => {
     }, function (err) {
         if (err) console.log(err);
     });
-    res.render('pages/user', {
-        userInterests: userInterests,
-        email: req.body.email
-    });
+    console.log(user);
+    res.redirect('/user/'+userId);
+    // , {
+    //     userInterests: userInterests,
+    //     email: req.body.email,
+    //     posts
+    // });
 });
 
 app.get('/auth/logout', function (req, res) {
@@ -252,6 +255,6 @@ app.get("*", (req, res) => {
     res.render('pages/404');
 })
 
-app.listen(5000, () => {
+app.listen(4000, () => {
     console.log(`server started`);
 });

@@ -49,11 +49,11 @@
                 </table>
                 <hr>
                 <p><b>Ideas I'm interested in</b></p>
-                <div class="list-group">
+                <div class="myInterests">
                     <% if (userInterests) { %>
                         <% for(var i=0; i < userInterests.length; i++) { %>
                             <% if (username == userInterests[i].username) { %> 
-                                <ul>
+                                <ul class="list-group">
                                     <li class="list-group-item"><a href="/jobs/<%= userInterests[i].post_id %>"><%= userInterests[i].post_title %> </a></li>
                                 </ul>
                             <% } %> 
@@ -62,11 +62,11 @@
                 </div>
                 <hr>
                 <p><b>My Ideas</b></p>
-                <div class="list-group">
+                <div class="myIdeas">
                     <% if (posts) { %>
                         <% for(var i=0; i < posts.length; i++) { %>
                             <% if (username == posts[i].posted_by) { %> 
-                                <ul>
+                                <ul class="list-group">
                                     <li class="list-group-item"><a href="/jobs/<%= posts[i]._id %>"><%= posts[i].title %> </a></li>
                                 </ul>
                             <% } %> 
