@@ -7,7 +7,7 @@ then can sell it to the user.
 
 ## Tech Stack
 
-**Client:** EJS, BootstrapCSS
+**Client:** EJS, Bootstrap 4
 
 **Server:** Node, Express, Mongoose
 
