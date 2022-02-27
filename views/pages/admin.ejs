@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <%- include("../partials/head"); -%>
+</head>
+
+<body class="container">
+
+    <%- include("../partials/header"); -%>
+
+    <main>
+        <div>
+            <h2>Admin Page</h2><hr>
+            <ul class="nav nav-tabs">
+                <li class="active"><a data-toggle="tab" href="#users">Users</a></li>
+                <li><a data-toggle="tab" href="#ideas">Ideas</a></li>
+            </ul>
+
+            <div class="tab-content">
+                <div id="users" class="tab-pane fade in active">
+                    <h4>Users</h4>
+                    <table class="table-striped table-hover adminTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>First Name</th>
+                                <th>Last Name</th>
+                                <th>Username</th>
+                                <th>Email</th>
+                                <th>Admin</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% for (let i = 0; i < users.length; i++) { %>
+                                <tr>
+                                    <td><%= users[i].id %></td>
+                                    <td><%= users[i].firstName %></td>
+                                    <td><%= users[i].lastName %></td>
+                                    <td><%= users[i].username %></td>
+                                    <td><%= users[i].email %></td>
+                                    <td><%= users[i].is_admin %></td>
+                                </tr>
+                            <% } %>
+                        </tbody>
+                    </table>
+                </div>
+                <div id="ideas" class="tab-pane fade">
+                    <h4>Ideas</h4>
+                    <table class="table-striped table-hover adminTable" id="ideas">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Title</th>
+                                <th>Username</th>
+                                <th>Created At</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% for (let i = 0; i < posts.length; i++) { %>
+                                <tr>
+                                    <td><%= posts[i].id %></td>
+                                    <td><%= posts[i].title %></td>
+                                    <td><%= posts[i].posted_by %></td>
+                                    <td><%= posts[i].created_at %></td>
+                                </tr>
+                            <% } %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>

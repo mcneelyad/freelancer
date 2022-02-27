@@ -1,4 +1,4 @@
-<!-- views/pages/jobs.ejs -->
+<!-- views/pages/ideas.ejs -->
 
 <!DOCTYPE html>
 <html lang="en">
@@ -14,11 +14,19 @@
     <main>
         <div class="jumbotron">
             <h2><%= post["title"] %></h2>
+            <p><%= post["created_at"].toDateString() %></p>
             <hr>
-            <% if(posted_by == username) { %>
-                <p>Posted by <b>You</b></p><br><br>
+            <% if(post['posted_by'] == username) { %>
+                <p>
+                    Posted by <span class="font-style-bold">You</span> 
+                    <button type="button" class="btn btn-sm" data-toggle="modal"
+                    data-target="#editPostModal"> <i class="fas fa-pencil-alt"></i></button>
+                </p>
+                
+                <br>
             <% } else { %>
-                <p>Posted by <b><%= post["posted_by"] %></b></p><br><br>
+                <p>Posted by <span class="font-style-bold"><%= post["posted_by"] %></span></p>
+                
             <% } %>
                 <article>
                     <p><%= post["description"] %></p>
@@ -28,11 +36,11 @@
 
             <% if(isLoggedIn) { %>
 
-                <% if(posted_by == username) { %>
+                <% if(post['posted_by'] == username) { %>
                     <button type="button" class="btn btn-info btn-lg btn-danger" data-toggle="modal"
-                        data-target="#modal">Delete</button>
+                        data-target="#confirmModal">Delete</button>
 
-                    <div class="modal fade" id="modal" role="dialog">
+                    <div class="modal fade" id="confirmModal" role="dialog">
                         <div class="modal-dialog">
                             <!-- Modal content-->
                             <div class="modal-content">
@@ -43,7 +51,7 @@
                                 </div>
                                 <div class="modal-body">
                                     <div class="btn-group">
-                                        <form action="/jobs/delete/<%= post._id %>" method="POST">
+                                        <form action="/ideas/delete/<%= post._id %>" method="POST">
                                             <button type="submit" class="btn btn-danger">Yes, I'm sure.</button>
                                         </form>
                                         <button type="button" class="btn btn-default btn-primary" data-dismiss="modal"
@@ -67,13 +75,14 @@
                     <% if (userInterested) { %> 
                         <p><em>You're already interested in this idea</em></p>
                     <% } else { %> 
-                        <form action="/jobs/interested/<%= post._id %>" method='POST'>
+                        <form action="/ideas/interested/<%= post._id %>" method='POST'>
                             <button type="submit" class="btn btn-info">I'm interested</button>
                         </form>
                     <% } %>
                 <% } %>
             <% } %>
         </div>
+        <%- include("../modals/edit_post"); -%>
     </main>
 
     <footer>

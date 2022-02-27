@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <%- include("../partials/head"); -%>
+</head>
+
+<body class="container">
+
+    <%- include("../partials/header"); -%>
+
+    <main>
+        <div class="jumbotron" id="ideaList">
+
+            <% if (error.length > 0){ %>
+                <div class="alert alert-danger"><%= error %></div>
+            <% } %>
+
+            <% if (success.length > 0){ %>
+                <div class="alert alert-success"><%= success %></div>
+            <% } %>
+
+            <div id="create_search">
+                <div id="create_button">
+                    <% if (isLoggedIn) { %>
+                        <a class="btn btn-primary" href="/ideas/new" role="button">Create a new idea</a>
+                        <br><br>
+                    <% } else { %>
+                        <p>You must be logged in to post a new concept/idea</p>
+                        <br>
+                    <% } %>
+                </div>
+                <div id="search">
+                    <!-- <form action="/ideas/search" method="GET">
+                        <input type="text" name="search" placeholder="Search for an idea">
+                        <input type="submit" value="Search">
+                    </form> -->
+                </div>
+            </div>
+
+            <div class="list-group">
+                <% posts.forEach((post) => { %>
+                    <div class="list-group-item">
+                        <a href="/ideas/<%= post._id %>"><%= post["title"] %></a> 
+                        - 
+                        <span style="font-size: small;"> <%= post["posted_by"] %></span>
+                        <br>
+                        <span class="d-inline-block text-truncate" style="width: 100%; font-size: smaller;">
+                            <em><%= post["description"] %> </em> 
+                        </span>
+                    </div>
+                    <br>
+                <% }) %>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <%- include("../partials/footer"); -%>
+    </footer>
+
+</body>
+
+</html>

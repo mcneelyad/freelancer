@@ -14,22 +14,34 @@
         <div class="row">
             <div class="col-sm-8">    
                 <div class="jumbotron">
-                    <p>A website for users to post ideas/concepts or jobs for freelance developers to complete and then the user will decide on the best version to buy. </p>      
+                    <p>A website for users to post ideas/concepts or ideas for freelance developers to complete and then the user will decide on the best version to buy. </p>      
                 </div>
             </div>
 
-            <div class="col-sm-4">        
-                <div class="well">
-                    <p>Popular Tags</p>
-                </div>
+            <div class="col-sm-4">  
+                <h4 class="mb-3">TODOs</h4>    
+                <ul class="list-group list-group-flush">
+                    <% for (var i = 0; i < todos.length; i++) { %>
+                        <li class="list-group-item">
+                            <% if (todos[i].completed) { %>
+                                <input type="checkbox" name=<%= todos[i].tag %>  id=<%= todos[i].tag %> checked />
+                                <label for=<%= todos[i].tag %>><%= todos[i].title %></label>
+                            <% } else { %>
+                                <input type="checkbox" name=<%= todos[i].tag %>  id=<%= todos[i].tag %> />
+                                <label for=<%= todos[i].tag %>><%= todos[i].title %></label>
+                            <% } %>
+                            
+                        </li>
+                    <% } %>
+                    <!-- <li class="list-group-item">search bar for ideas</li> -->
+                    <!-- <li class="list-group-item">tags for each idea</li> -->
+                    <!-- <li class="list-group-item">admin page</li> -->
+                    <!-- <li class="list-group-item">username in the address bar</li> -->
+                    <!-- <li class="list-group-item">"updated at" field for ideas</li> -->
+                </ul>
             </div>
-
         </div>
-    </main>
-
-    <footer>
         <%- include("../partials/footer"); -%>
-    </footer>
-
+    </main>
     </body>
 </html>

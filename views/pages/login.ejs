@@ -1,4 +1,4 @@
-<!-- views/pages/jobs.ejs -->
+<!-- views/pages/ideas.ejs -->
 
 <!DOCTYPE html>
 <html lang="en">
@@ -13,12 +13,18 @@
 
     <main>
         <div class="jumbotron">
-            <% if (error.length > 0){ %>
-                <div class="alert alert-danger"><%= error %></div>
+
+
+            <% if (error) { %>
+                <% if (error.length > 0){ %>
+                    <div class="alert alert-danger"><%= error %></div>
+                <% } %>
             <% } %>
 
-            <% if (success.length > 0){ %>
-                <div class="alert alert-success"><%= success %></div>
+            <% if (success) { %>
+                <% if (success.length > 0){ %>
+                    <div class="alert alert-success"><%= success %></div>
+                <% } %>
             <% } %>
 
             <h2>Login</h2>
