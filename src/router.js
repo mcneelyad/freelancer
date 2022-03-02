@@ -8,87 +8,12 @@ const UserInterested = require('../database/models/user_interested');
 
 const utils = require('./utils');
 
-
 router.get("/", async function (req, res) {
     var todos = utils.todos;
     res.render("pages/index", { todos });
 });
 
-router.get("/ideas", async (req, res) => {
-    const posts = await Post.find({});
-    res.render("pages/ideas", {
-        posts,
-    });
-});
-
-router.get("/ideas/new", (req, res) => {
-    res.render("pages/new-idea");
-});
-
-router.get("/ideas/:id", async (req, res) => {
-    const post = await Post.findById(req.params.id);
-    const userInterests = await UserInterested.find({});
-
-    res.render("pages/post", {
-        userInterests,
-        post,
-        postID: post._id,
-    });
-});
-
-router.post("/ideas/delete/:id", function (req, res) {
-    Post.deleteOne({ _id: req.params.id })
-        .then((result) => {
-            res.redirect("/ideas");
-        })
-        .catch((error) => console.error(error));
-});
-
-router.post("/ideas/interested/:id", async (req, res) => {
-    const post = await Post.findById(req.params.id);
-    UserInterested.create(
-        {
-            user_id: userId,
-            username: username,
-            post_id: post._id,
-            post_title: post.title,
-        },
-        (error) => {
-            console.log(error);
-        }
-    );
-    res.redirect("/user/" + userId);
-});
-
-router.post("/ideas/:id/edit", async (req, res) => {
-    const post = await Post.findById(req.params.id);
-    post.title = req.body.title;
-    post.description = req.body.description;
-    post.updated_at = utils.getCurrentDate();
-    post.save();
-
-    res.redirect("/ideas/" + req.params.id);
-});
-
-router.post("/ideas/save", (req, res) => {
-    var title = req.body.title;
-    var description = req.body.description;
-    var posted_by = req.session.username;
-
-    Post.create(
-        {
-            title: title,
-            description: description,
-            posted_by: posted_by,
-        },
-        (error, post) => {
-            res.redirect("/ideas");
-        }
-    );
-});
-
 router.get("/user/:username", async (req, res) => {
-    console.log(req.params.username);
     const user = await User.findOne({ username: req.params.username });
     const userInterests = await UserInterested.find({
         username: req.params.username,

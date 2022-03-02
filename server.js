@@ -11,7 +11,9 @@ const passport = require("passport");
 
 const utils = require("./src/utils");
 const fs = require("fs");
+
 const router = require("./src/router");
+const ideaRouter = require("./src/ideaRouter");
 
 const Post = require("./database/models/post");
 const User = require("./database/models/user");
@@ -103,6 +105,7 @@ passport.use(
   })
 );
 
+app.use("/ideas", ideaRouter);
 app.use("/", router);
 
 app.listen(4000, () => {
